@@ -27,7 +27,7 @@ func generateErrStatus(statusCode uint32) error {
 	}
 }
 
-func (a *GrpcAdapter) UnaryResiliency(ctx context.Context, req *resl.ResiliencyRequest) (
+func (a *GrpcAdaptor) UnaryResiliency(ctx context.Context, req *resl.ResiliencyRequest) (
 	*resl.ResiliencyResponse, error) {
 	log.Println("UnaryResiliency called")
 	str, sts := a.resiliencyService.GenerateResiliency(req.MinDelaySecond,
@@ -42,7 +42,7 @@ func (a *GrpcAdapter) UnaryResiliency(ctx context.Context, req *resl.ResiliencyR
 	}, nil
 }
 
-func (a *GrpcAdapter) ServerStreamingResiliency(req *resl.ResiliencyRequest,
+func (a *GrpcAdaptor) ServerStreamingResiliency(req *resl.ResiliencyRequest,
 	stream resl.ResiliencyService_ServerStreamingResiliencyServer) error {
 	log.Println("ServerStreamingResiliency called")
 
@@ -68,7 +68,7 @@ func (a *GrpcAdapter) ServerStreamingResiliency(req *resl.ResiliencyRequest,
 	}
 }
 
-func (a *GrpcAdapter) ClientStreamingResiliency(
+func (a *GrpcAdaptor) ClientStreamingResiliency(
 	stream resl.ResiliencyService_ClientStreamingResiliencyServer) error {
 	log.Println("ClientStreamingResiliency called")
 
@@ -98,7 +98,7 @@ func (a *GrpcAdapter) ClientStreamingResiliency(
 	}
 }
 
-func (a *GrpcAdapter) BiDirectionalResiliency(
+func (a *GrpcAdaptor) BiDirectionalResiliency(
 	stream resl.ResiliencyService_BiDirectionalResiliencyServer) error {
 	log.Println("BiDirectionalResiliency called")
 
