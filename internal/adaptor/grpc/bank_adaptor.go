@@ -135,3 +135,70 @@ func (a *GrpcAdaptor) SummarizeTransactions(stream bank.BankService_SummarizeTra
 		}
 	}
 }
+
+func currentDatetime() *datetime.DateTime {
+	now := time.Now()
+
+	return &datetime.DateTime{
+		Year:       int32(now.Year()),
+		Month:      int32(now.Month()),
+		Day:        int32(now.Day()),
+		Hours:      int32(now.Hour()),
+		Minutes:    int32(now.Minute()),
+		Seconds:    int32(now.Second()),
+		Nanos:      int32(now.Second()),
+		TimeOffset: &datetime.DateTime_UtcOffset{},
+	}
+}
+
+func (a *GrpcAdaptor) TransferMultiple(stream bank.BankService_TransferMultipleServer) error {
+	context := stream.Context()
+
+	for {
+		select {
+		case <-context.Done():
+			log.Println("Client cancelled")
+			return nil
+		default:
+			req, err := stream.Recv()
+			if err == io.EOF {
+				return nil
+			}
+			if err != nil {
+				log.Fatalf("Error while reading from client :", err)
+			}
+
+			tt := dbank.TransferTransaction{
+				FromAccountNumber: req.FromAccountNumber,
+				ToAccountNumber:   req.ToAccountNumber,
+				Currency:          req.Currency,
+				Amount:            req.Amount,
+			}
+
+			_, transferSuccess, err := a.bankService.Transfer(tt)
+
+			if err != nil {
+				return err
+			}
+
+			res := bank.TransferResponse{
+				FromAccountNumber: req.FromAccountNumber,
+				ToAccountNumber:   req.ToAccountNumber,
+				Currency:          req.Currency,
+				Amount:            req.Amount,
+				Timestamp:         currentDatetime(),
+			}
+
+			if transferSuccess {
+				res.Status = bank.TransferStatus_TRANSFER_STATUS_SUCCESS
+			} else {
+				res.Status = bank.TransferStatus_TRANSFER_STATUS_FAILED
+			}
+
+			err = stream.Send(&res)
+			if err != nil {
+				log.Fatalln("Error while reading from client :", err)
+			}
+		}
+	}
+}

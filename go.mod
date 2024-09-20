@@ -3,7 +3,8 @@ module github.com/amoonguses1/my-grpc-server
 go 1.22.5
 
 require (
-	github.com/amoonguses1/grpc-proto-study v0.0.4
+	github.com/amoonguses1/grpc-proto-study v0.0.5
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.18.1
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v4 v4.18.3
