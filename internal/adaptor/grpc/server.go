@@ -10,6 +10,7 @@ import (
 	resl "github.com/amoonguses1/grpc-proto-study/protogen/go/resiliency"
 	"github.com/amoonguses1/my-grpc-server/internal/port"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type GrpcAdaptor struct {
@@ -40,7 +41,14 @@ func (a *GrpcAdaptor) Run() {
 	}
 	log.Printf("Server listening on port %d\n", a.grpcPort)
 
+	creds, err := credentials.NewServerTLSFromFile("ssl/server.crt", "ssl/server.pem")
+
+	if err != nil {
+		log.Fatalln("Cannot create server credentials :", err)
+	}
+
 	grpcServer := grpc.NewServer(
+		grpc.Creds(creds),
 	// grpc.ChainStreamInterceptor(
 	// 	interceptor.LogStreamServerInterceptor(),
 	// 	interceptor.BasicStreamServerInterceptor(),
